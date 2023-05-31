@@ -7,6 +7,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  username  String        @unique
+  email     String        @unique
+  avatarUrl String
+  messages  Message[]
+  channels  UserChannel[]
+}
+
+model UserChannel {
+  user      User    @relation(fields: [username], references: [username])
+  channel   Channel @relation(fields: [channelId], references: [id])
+  username  String
+  channelId String
+
+  @@unique([username, channelId])
+}
+
 model Workspace {
   id       String    @id @default(uuid())
   name     String
@@ -15,11 +32,12 @@ model Workspace {
 }
 
 model Channel {
-  id          String    @id @default(uuid())
+  id          String        @id @default(uuid())
   name        String
   messages    Message[]
-  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspace   Workspace     @relation(fields: [workspaceId], references: [id])
   workspaceId String
+  users       UserChannel[]
 }
 
 model Message {
@@ -29,4 +47,6 @@ model Message {
   updatedAt DateTime @updatedAt
   channel   Channel  @relation(fields: [channelId], references: [id])
   channelId String
+  user      User     @relation(fields: [username], references: [username])
+  username  String
 }
