@@ -1,3 +1,9 @@
-import { Prisma } from "@prisma/client";
+import { ChannelVisibility } from "@prisma/client";
 
-export type CreateChannelDto = Prisma.ChannelCreateArgs["data"];
+export type CreateChannelDto = {
+  name: string;
+  description?: string;
+  visibility: ChannelVisibility;
+  creatorUsername: string;
+  workspaceId: string;
+};

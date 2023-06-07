@@ -8,11 +8,14 @@ datasource db {
 }
 
 model User {
-  username  String        @unique
-  email     String        @unique
-  avatarUrl String
-  messages  Message[]
-  channels  UserChannel[]
+  username        String          @unique
+  email           String          @unique
+  avatarUrl       String
+  messages        Message[]
+  userChannel     UserChannel[]
+  userWorkspace   UserWorkspace[]
+  ownedWorkspaces Workspace[]
+  createdChannels Channel[]
 }
 
 model UserChannel {
@@ -25,23 +28,39 @@ model UserChannel {
 }
 
 model Workspace {
-  id       String    @id @default(uuid())
-  name     String
-  url      String
-  channels Channel[]
+  id            String          @id
+  name          String
+  url           String
+  owner         User            @relation(fields: [ownerUsername], references: [username])
+  ownerUsername String
+  channels      Channel[]
+  userWorkspace UserWorkspace[]
+}
+
+model UserWorkspace {
+  user        User      @relation(fields: [username], references: [username])
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  username    String
+  workspaceId String
+
+  @@unique([username, workspaceId])
 }
 
 model Channel {
-  id          String        @id @default(uuid())
-  name        String
-  messages    Message[]
-  workspace   Workspace     @relation(fields: [workspaceId], references: [id])
-  workspaceId String
-  users       UserChannel[]
+  id              String            @id
+  name            String
+  description     String?
+  visibility      ChannelVisibility @default(public)
+  creator         User              @relation(fields: [creatorUsername], references: [username])
+  creatorUsername String
+  messages        Message[]
+  workspace       Workspace         @relation(fields: [workspaceId], references: [id])
+  workspaceId     String
+  users           UserChannel[]
 }
 
 model Message {
-  id        String   @id @default(uuid())
+  id        String   @id
   body      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -49,4 +68,9 @@ model Message {
   channelId String
   user      User     @relation(fields: [username], references: [username])
   username  String
+}
+
+enum ChannelVisibility {
+  private
+  public
 }

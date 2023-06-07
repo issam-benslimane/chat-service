@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { handleError, unknowEndpoint } from "./common/middlewares";
-import { workspacesRouter } from "./modules/workspaces";
+import { AppRouter } from "./modules";
 
 const app = express();
 const port = 8080;
@@ -9,7 +9,7 @@ const port = 8080;
 app.use(express.json());
 app.use(cors());
 
-app.use("/api", workspacesRouter);
+app.use("/api", AppRouter);
 
 app.use(unknowEndpoint);
 app.use(handleError);

@@ -11,6 +11,16 @@ const getChannels = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+const getChannel = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const channelId = req.params.channelId as string;
+    const channel = await channelsService.getChannel(channelId);
+    res.status(200).json(channel);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const createChannel = async (
   req: Request,
   res: Response,
@@ -18,12 +28,13 @@ const createChannel = async (
 ) => {
   try {
     const workspaceId = req.params.workspaceId as string;
-    const data = Object.assign(req.body, workspaceId);
-    await channelsService.createChannel(data);
-    res.status(201);
+    const creatorUsername = req.user.username;
+    const data = Object.assign(req.body, { workspaceId, creatorUsername });
+    const createdChannel = await channelsService.createChannel(data);
+    res.status(201).json(createdChannel);
   } catch (error) {
     next(error);
   }
 };
 
-export const channelsHandlers = { getChannels, createChannel };
+export const channelsHandlers = { getChannels, getChannel, createChannel };

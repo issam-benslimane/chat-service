@@ -3,6 +3,12 @@ import { channelsHandlers } from "./handlers";
 
 export const channelsRouter = Router({ mergeParams: true });
 
-channelsRouter.route("/channels").get(channelsHandlers.getChannels).post();
+channelsRouter
+  .route("/channels")
+  .get(channelsHandlers.getChannels)
+  .post(channelsHandlers.createChannel);
 
-channelsRouter.route("/channels/:channelId").get().delete();
+channelsRouter
+  .route("/channels/:channelId")
+  .get(channelsHandlers.getChannel)
+  .delete();
